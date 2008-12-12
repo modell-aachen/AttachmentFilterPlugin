@@ -64,13 +64,11 @@ sub beforeAttachmentSaveHandler {
     }
     else { # forbidden filetype
     throw Foswiki::OopsException( 'attention',
-                                       def => "dummy",
-                                       showmessage => 'You cannot upload this attachment: %PARAM1%. The type(%PARAM3%) is forbidden, please ask your administrator for further informations',
+                                       def => "generic",
                                        web => $web,
                                        topic => $topic,
 				       keep => 1,
-                                       params => [ $attribs->{'attachment'},
-				                  $allowedTypes,$fileType] 
+                                       params => [ 'You cannot upload this attachment: '.$attribs->{'attachment'}.". The type($fileType) is forbidden, please ask your administrator for further informations"] 
 			          );
     }
 }
