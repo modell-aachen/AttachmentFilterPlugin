@@ -1,10 +1,5 @@
-#!/usr/local/bin/perl -wI.
-#
 # This script Copyright (c) 2008 Impressive.media 
 # and distributed under the GPL (see below)
-#
-# Based on parts of GenPDF, which has several sources and authors
-# This script uses html2pdf as backend, which is distributed under the LGPL
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
