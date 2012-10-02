@@ -21,9 +21,10 @@ use File::MMagic;
 use vars
   qw( $VERSION $RELEASE $SHORTDESCRIPTION $debug $pluginName $NO_PREFS_IN_TOPIC );
 
-$VERSION = '$Rev: 12445$';
-
-$RELEASE = 'Dakar';
+our $VERSION           = '$Rev$';
+our $RELEASE           = '1.0';
+our $SHORTDESCRIPTION  = 'Preventing Uploads with blocked mime types';
+our $NO_PREFS_IN_TOPIC = 1;
 
 $SHORTDESCRIPTION =
 'This plugin filters attachment by their content type and allows to block specific attachments';
@@ -43,27 +44,27 @@ sub initPlugin {
     return 1;
 }
 
-sub beforeAttachmentSaveHandler {
+sub beforeUploadHandler {
 
-    # do not uncomment, use $_[0], $_[1]... instead
-    ###   my( $attrHashRef, $topic, $web ) = @_;
-    my $web     = $_[2];
-    my $topic   = $_[1];
-    my $attribs = $_[0];
-    my $mm      = new File::MMagic;    # use internal magic file
-      # $mm = File::MMagic->new('/etc/magic'); # use external magic file
-      #   # $mm = File::MMagic->new('/usr/share/etc/magic'); # if you use Debian
-      #     $res = $mm->checktype_filename("/somewhere/unknown/file");
-    my $fileType = $mm->checktype_filename( $attribs->{'tmpFilename'} );
+    my ( $attrs, $meta ) = @_;
+    
+    my $magic      = new File::MMagic;    # use internal magic file
+	my $fh = $attrs->{stream};
+	my $mime_type = $magic->checktype_filehandle($fh)
+	
+	# Modac : Muss ich hier den Handle schließen oder Ähnliches tun?
 
+    # Modac : Logik sowohl für Allowed als auch denied erstellen
     my $allowedTypes =
-      $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{AllowedFiltypes};
+      $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{AllowedFiletypes} || '';
+      
+    my $blockedTypes = 
+      $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{BlockedFiletypes} || '';
 
-    if ( $allowedTypes =~ m/$fileType/ ) {
-
-        # everything is ok
-    }
-    else {    # forbidden filetype
+    if ( $blockedTypes =~ m/$fileType/  ) {
+        
+        # Modac : Hier muss eine durch den CKEditor lesbare Response kommen! JSON ?
+    	# forbidden filetype
         throw Foswiki::OopsException(
             'attention',
             def    => "generic",
@@ -76,6 +77,30 @@ sub beforeAttachmentSaveHandler {
                   . ". The type($fileType) is forbidden, please ask your administrator for further informations"
             ]
         );
+    }
+    
+    elsif  { ! ( $allowedTypes =~ m/$fileType/ || $allowedTypes == '' ) {
+    	
+    	# Modac : Hier muss eine durch den CKEditor lesbare Response kommen! JSON ?
+    	# forbidden filetype
+        throw Foswiki::OopsException(
+            'attention',
+            def    => "generic",
+            web    => $web,
+            topic  => $topic,
+            keep   => 1,
+            params => [
+                    'You cannot upload this attachment: '
+                  . $attribs->{'attachment'}
+                  . ". The type($fileType) is forbidden, please ask your administrator for further informations"
+            ]
+        );
+    	
+    }
+    else {   
+    	
+    	# everything is ok 
+    	
     }
 }
 
