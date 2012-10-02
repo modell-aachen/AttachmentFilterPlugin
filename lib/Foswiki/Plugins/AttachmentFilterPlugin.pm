@@ -79,7 +79,7 @@ sub beforeUploadHandler {
         );
     }
     
-    elsif  { ! ( $allowedTypes =~ m/$fileType/ || $allowedTypes == '' ) {
+    elsif  ( !( $allowedTypes =~ m/$fileType/ ) || $allowedTypes == '' ) {
     	
     	# Modac : Hier muss eine durch den CKEditor lesbare Response kommen! JSON ?
     	# forbidden filetype
