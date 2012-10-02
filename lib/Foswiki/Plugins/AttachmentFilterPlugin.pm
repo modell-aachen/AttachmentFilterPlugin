@@ -22,7 +22,7 @@ use vars
   qw( $VERSION $RELEASE $SHORTDESCRIPTION $debug $pluginName $NO_PREFS_IN_TOPIC );
 
 our $VERSION           = '$Rev$';
-our $RELEASE           = '1.0';
+our $RELEASE           = '1.0.1';
 our $SHORTDESCRIPTION  = 'Preventing Uploads with blocked mime types';
 our $NO_PREFS_IN_TOPIC = 1;
 
