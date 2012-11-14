@@ -2,9 +2,9 @@
 # <h2>General Settings</h2>
 
 # **STRING**
-# Semicolon separated list of filetypes allowed. If you leave it empty, every file upload is allowed.
-$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{AllowedFiletypes}="";
+# Please set the behaviour of the AttachmentFilterPlugin. Default behaviour is blocking the underlying FiletypeFilter list.
+$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{Behaviour}="block";
 
 # **STRING**
-# Semicolon separated list of filetypes blocked. 
-$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{BlockedFiletypes}="";
+# Comma separated list of filetypes blocked. 
+$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{FiletypeFilter}="bmp";

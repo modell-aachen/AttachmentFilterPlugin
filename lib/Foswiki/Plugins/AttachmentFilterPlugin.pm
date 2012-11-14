@@ -20,21 +20,21 @@ use Foswiki::OopsException;
 use File::MMagic;
 use vars
   qw( $VERSION $RELEASE $SHORTDESCRIPTION $debug $pluginName $NO_PREFS_IN_TOPIC );
+ 
 
-our $VERSION           = '$Rev$';
-our $RELEASE           = '1.0.1';
-our $SHORTDESCRIPTION  = 'Preventing Uploads with blocked mime types';
-our $NO_PREFS_IN_TOPIC = 1;
-
+$VERSION           = '$Rev$';
+$RELEASE           = '1.0.2';
 $SHORTDESCRIPTION =
 'This plugin filters attachment by their content type and allows to block specific attachments';
 $NO_PREFS_IN_TOPIC = 1;
 
+# Modac : CodeReview : Brauchen wir das noch?
 $pluginName = 'AttachmentFilterPlugin';
 
 sub initPlugin {
     my ( $topic, $web, $user, $installWeb ) = @_;
 
+# Modac : CodeReview : Brauchen wir das noch?
     # check for Plugins.pm versions
     if ( $Foswiki::Plugins::VERSION < 1.026 ) {
         Foswiki::Func::writeWarning(
@@ -50,39 +50,29 @@ sub beforeUploadHandler {
     
     my $magic      = new File::MMagic;    # use internal magic file
 	my $fh = $attrs->{stream};
-	my $mime_type = $magic->checktype_filehandle($fh)
+	my $mime_type = $magic->checktype_filehandle($fh);
+	my $web = $meta->web;
+	my $topic = $meta->topic;
 	
-	# Modac : Muss ich hier den Handle schließen oder Ähnliches tun?
+	# Modac : Testausgabe
+	# print STDERR $mime_type;
+	
+	# Modac : Muss ich den Handle schließen oder Ähnliches tun?
 
-    # Modac : Logik sowohl für Allowed als auch denied erstellen
-    my $allowedTypes =
-      $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{AllowedFiletypes} || '';
-      
-    my $blockedTypes = 
-      $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{BlockedFiletypes} || '';
-
-    if ( $blockedTypes =~ m/$fileType/  ) {
-        
-        # Modac : Hier muss eine durch den CKEditor lesbare Response kommen! JSON ?
-    	# forbidden filetype
-        throw Foswiki::OopsException(
-            'attention',
-            def    => "generic",
-            web    => $web,
-            topic  => $topic,
-            keep   => 1,
-            params => [
-                    'You cannot upload this attachment: '
-                  . $attribs->{'attachment'}
-                  . ". The type($fileType) is forbidden, please ask your administrator for further informations"
-            ]
-        );
-    }
+    # Modac : Filter Behaviour (block, allow)
+    my $type = $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{Behaviour} || 'block';
     
-    elsif  ( !( $allowedTypes =~ m/$fileType/ ) || $allowedTypes == '' ) {
-    	
-    	# Modac : Hier muss eine durch den CKEditor lesbare Response kommen! JSON ?
+    # Modac : Allow ohne Filter blockiert alles, Block ohne Filter lässt alles passieren
+    my $fileTypes =
+      $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{FiletypeFilter} || '';
+    $fileTypes = join('|', map { ("$_\$", "^$_\$") } split(/,/, $fileTypes));
+    $fileTypes = '//' if $fileTypes eq '';
+    
+    # print STDERR $fileTypes;
+    if ( ($mime_type =~ m/$fileTypes/ && $type eq 'block') || ($mime_type !~ m/$fileTypes/ && $type eq 'allow') ) {
+        
     	# forbidden filetype
+    	# Modac : ToDo : Ausgabe für den CKEditor!
         throw Foswiki::OopsException(
             'attention',
             def    => "generic",
@@ -91,16 +81,10 @@ sub beforeUploadHandler {
             keep   => 1,
             params => [
                     'You cannot upload this attachment: '
-                  . $attribs->{'attachment'}
-                  . ". The type($fileType) is forbidden, please ask your administrator for further informations"
+                  . $attrs->{'attachment'}
+                  . ". The type($mime_type) is forbidden, please ask your administrator for further informations"
             ]
         );
-    	
-    }
-    else {   
-    	
-    	# everything is ok 
-    	
     }
 }
 
