@@ -22,7 +22,7 @@ use vars
   qw( $VERSION $RELEASE $SHORTDESCRIPTION $debug $pluginName $NO_PREFS_IN_TOPIC );
  
 
-$VERSION           = '$Rev$';
+$VERSION = "1.0";
 $RELEASE = "1.0";
 $SHORTDESCRIPTION =
 'This plugin filters attachment by their content type and allows to block specific attachments';
@@ -89,3 +89,4 @@ sub beforeUploadHandler {
 }
 
 1;
+
