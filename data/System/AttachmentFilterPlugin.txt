@@ -1,20 +1,33 @@
 ---+ !AttachmentFilterPlugin
-This plugin filters attachment by their content type and allows to block specific attachments
-   * Set SHORTDESCRIPTION = This plugin filters attachment by their content type and allows to block specific attachments
+%SHORTDESCRIPTION%
+
 %TOC%
 
----++ Usage
-   * See installation instructions
+---++ Installation
+%$INSTALL_INSTRUCTIONS%
 
----++ Installation instructions
-   * just use the installer attached to the topic or even easier, use the configure-system/Extension to easy install it trough an user-interface
----+++ Configuration
-   * Use the Configuration Center ( bin/configure ) to set the allowed filetypes in a semicolon separated list 
-      * $Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{AllowedFiltypes}
-__Note:__ You do not need to install anything on the browser to use this Plugin. The following instructions are for the administrator who installs the Plugin on the server where Foswiki is running.
+---++ Configuration
+=AttachmentFilterPlugin= preferences are set in [[%SCRIPTURLPATH{"configure"}%]].
+%BR% The configuration is split into two preferences:
+   * =$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{Behaviour}=
+      * Defines the action if an attachment of a type listed in =FiletypeFilter=
+      is going to be upload. Defaults to =block=
+   * =$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{FiletypeFilter}=
+      * Semicolon seperated list of file extensions for which =AttachmentFilterPlugin=
+      shall execute its defined ={Behaviour}=. Defaults to =''=.
 
+_Example:_
+<verbatim>
+$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{Behaviour} = 'block';
+$Foswiki::cfg{Plugins}{AttachmentFilterPlugin}{FiletypeFilter} = 'bmp;exe;com;zip;tar';
+</verbatim>
 
+*Note* %BR%
+Setting preference ={Behaviour}= to =allow= while not explicitly telling
+=AttachmentFilterPlugin= which file types you want to allow (={FiletypeFilter}=),
+all incoming file uploads will be declined!
 
+---++ Info
 |  Plugin Author: | Foswiki:Main.EugenMayer |
 |  Copyright: | &copy; 2009, Collaborganize [[www.collaborganize.com]] |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
